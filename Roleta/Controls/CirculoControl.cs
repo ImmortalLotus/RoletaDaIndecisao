@@ -81,7 +81,7 @@ namespace Roleta.Controls
                 }
 
 
-                byte alpha = 50;
+                byte alpha = 70;
                 Color cor= new Color(alpha,r, g, b);
 
                 brush.GradientStops.Add(new GradientStop(cor, offset));
