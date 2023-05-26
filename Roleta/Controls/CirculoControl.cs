@@ -37,9 +37,38 @@ namespace Roleta.Controls
 
         public override void Render(DrawingContext drawingContext)
         {
-            var p1 = new Point(0,0);
+            var p1 = new Point(0, 0);
+            Brush brush1 = new SolidColorBrush(Color.FromArgb(90, 0, 0, 0));
+            var pen = new Pen(brush1, 1, lineCap: PenLineCap.Square);
+            ConicGradientBrush brush = CriaBrushParaOCirculo(p1);
 
-            var pen = new Pen(Brushes.Transparent,20 , lineCap: PenLineCap.Square);
+            drawingContext.DrawEllipse(brush, pen, p1, 300, 300);
+            //p1                    // Coordenadas do centro do círculo
+
+            
+            // Coordenadas do primeiro vértice
+            float angleIncrement = 360 / 10;
+            float startingAngle = 270;
+            for (int i = 0; i < 10; i++)
+            {
+                float angle = startingAngle;
+
+                if (i != 0)
+                {
+                    angle = startingAngle + (i) * angleIncrement;
+                }
+
+
+                // Restaure o estado anterior da transformação
+                Point pointA = new Point(300 * Math.Cos((angle * Math.PI) / 180), 300 * Math.Sin((angle * Math.PI) / 180));
+
+                drawingContext.DrawLine(pen, new Point(0, 0), pointA);
+            }
+
+        }
+
+        private static ConicGradientBrush CriaBrushParaOCirculo(Point p1)
+        {
             ConicGradientBrush brush = new ConicGradientBrush();
             brush.Center = new RelativePoint(p1, RelativeUnit.Absolute);
 
@@ -81,32 +110,13 @@ namespace Roleta.Controls
                 }
 
 
-                byte alpha = 70;
-                Color cor= new Color(alpha,r, g, b);
+                byte alpha = 110;
+                Color cor = new Color(alpha, r, g, b);
 
                 brush.GradientStops.Add(new GradientStop(cor, offset));
             }
 
-            drawingContext.DrawEllipse(brush, pen, p1, 400, 400);
-            //p1                    // Coordenadas do centro do círculo
-            Brush brush1= new SolidColorBrush(Color.FromArgb(100, 0, 0, 0));
-            pen = new Pen(brush1,5,lineCap: PenLineCap.Square);
-            // Coordenadas do primeiro vértice
-            float angleIncrement = 360 / 10;
-            float startingAngle = 270;
-            for (int i = 0; i < 10; i++)
-            {
-                float angle = startingAngle;
-                if(i != 0)
-                {
-                    angle = startingAngle + (i) * angleIncrement;
-                }
-
-                Point pointA= new Point(400*Math.Cos((angle* Math.PI)/180),400*Math.Sin((angle * Math.PI)/180));
-
-                drawingContext.DrawLine(pen, new Point(0,0), pointA);
-            }
-
+            return brush;
         }
     }
 }
