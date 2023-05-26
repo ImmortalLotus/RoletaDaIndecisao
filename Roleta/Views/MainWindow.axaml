@@ -9,7 +9,7 @@
 		Icon="/Assets/avalonia-logo.ico"
 		Title="Roleta da Indecisão"
 		TransparencyLevelHint="AcrylicBlur"
-		Background="Transparent"
+		Background="Black"
 		ExtendClientAreaChromeHints="PreferSystemChrome"
 		ExtendClientAreaToDecorationsHint="True">
 
