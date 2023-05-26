@@ -2,6 +2,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Roleta.App">
 
+	<Application.Resources>
+		<LinearGradientBrush x:Key="PretoBrilhoso"  EndPoint="0%,0%" StartPoint="100%,100%">
+			<GradientStop Color="#484846" Offset="0.0" />
+			<GradientStop Color="#000000" Offset="0.5" />
+			<GradientStop Color="#484846" Offset="1.0" />
+		</LinearGradientBrush>
+	</Application.Resources>
+
     <Application.Styles>
         <FluentTheme Mode="Dark"/>
     </Application.Styles>
