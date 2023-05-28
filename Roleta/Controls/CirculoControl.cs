@@ -2,10 +2,15 @@
 using System.Collections.Generic;
 using System.Drawing;
 using Avalonia;
+using Avalonia.Animation;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Rendering.SceneGraph;
+using Avalonia.Styling;
 using Avalonia.Threading;
+using HarfBuzzSharp;
+using ReactiveUI;
 using Brush = Avalonia.Media.Brush;
 using Brushes = Avalonia.Media.Brushes;
 using Color = Avalonia.Media.Color;
@@ -14,8 +19,21 @@ using Point = Avalonia.Point;
 
 namespace Roleta.Controls
 {
-    public class CirculoControl : Control
+    public class CirculoControl : Control,IStyleable
     {
+        public static readonly RoutedEvent<RoutedEventArgs> ClickEvent =
+            RoutedEvent.Register<CirculoControl, RoutedEventArgs>(nameof(Click), RoutingStrategies.Bubble);
+
+        public event EventHandler<RoutedEventArgs> Click
+        {
+            add => AddHandler(ClickEvent, value);
+            remove => RemoveHandler(ClickEvent, value);
+        }
+
+
+
+        Type IStyleable.StyleKey => typeof(Button);
+
         static CirculoControl()
         {
             AffectsRender<CirculoControl>(AngleProperty);
@@ -34,6 +52,7 @@ namespace Roleta.Controls
             get => GetValue(AngleProperty);
             set => SetValue(AngleProperty, value);
         }
+
 
         public override void Render(DrawingContext drawingContext)
         {
@@ -66,6 +85,7 @@ namespace Roleta.Controls
             }
 
         }
+
 
         private static ConicGradientBrush CriaBrushParaOCirculo(Point p1)
         {
