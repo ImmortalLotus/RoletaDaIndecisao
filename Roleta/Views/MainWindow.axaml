@@ -11,7 +11,8 @@
 		TransparencyLevelHint="AcrylicBlur"
 		Background="{StaticResource	PretoBrilhoso}"
 		ExtendClientAreaChromeHints="PreferSystemChrome"
-		ExtendClientAreaToDecorationsHint="True">
+		ExtendClientAreaToDecorationsHint="True"
+		Name="Window">
 
 	<Window.Styles>
 		<Style Selector="TextBlock.h1">
@@ -22,7 +23,7 @@
 			<Setter Property="RenderTransform" Value="rotate(0)"/>
 		</Style>
 		<Style Selector="Button#Circulo.clicarao">
-			<Setter Property="RenderTransform" Value="{Binding Spin}"/>
+			<Setter Property="RenderTransform" Value="{Binding #Window.DataContext.Angle}"/>
 		</Style>
 	</Window.Styles>
 
