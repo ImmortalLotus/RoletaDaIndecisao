@@ -57,7 +57,7 @@ namespace Roleta.Views
             var context = DataContext as MainWindowViewModel;
             Random rand = new Random(Guid.NewGuid().GetHashCode());
             int graus = rand.Next(3600, (10 / 2) * 7200) / 5;
-            context!.Spin = $"rotate({graus}deg)";
+            context!.Angle = $"rotate({graus}deg)";
 
             Circulo.Classes.Set("clicarao", true);
             Debug.WriteLine("passou por aqui");
