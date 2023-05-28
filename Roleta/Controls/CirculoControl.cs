@@ -72,7 +72,7 @@ namespace Roleta.Controls
                 }
             };
 
- 
+
                 brush = CriaBrushParaOCirculo(p1, 100);
                 drawingContext.DrawEllipse(brush, pen, p1, 300, 300);
                 brush = CriaBrushParaOCirculo(p1, 50);
