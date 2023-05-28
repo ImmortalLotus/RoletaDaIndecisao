@@ -1,13 +1,20 @@
-﻿namespace Roleta.ViewModels
+﻿using ReactiveUI;
+
+namespace Roleta.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
         public string Greeting => "Welcome to Avalonia!";
 
-        public string Spin{ get; set; }
+        private string _Spin;
+        public string Angle
+        {
+            get => _Spin;
+            set => this.RaiseAndSetIfChanged(ref _Spin, value);
+        }
         public MainWindowViewModel()
         {
-            Spin = "rotate(10deg)";
+            Angle = "rotate(10deg)";
         }
     }
 }
