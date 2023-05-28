@@ -18,7 +18,14 @@
 			<Setter Property="FontSize" Value="50"/>
 			<Setter Property="FontFamily" Value="/Assets/fonte-titulo.ttf#Dailymirror Personal Use"/>
 		</Style>
+		<Style Selector="Button#Circulo">
+			<Setter Property="RenderTransform" Value="rotate(0)"/>
+		</Style>
+		<Style Selector="Button#Circulo.clicarao">
+			<Setter Property="RenderTransform" Value="{Binding Spin}"/>
+		</Style>
 	</Window.Styles>
+
 
 	<Design.PreviewWith>
 		<controls:CirculoControl></controls:CirculoControl>
@@ -42,7 +49,13 @@
 				<TextBlock Classes="h1" Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Center" TextAlignment="Center">ROLETA DO FILMASSO UwU</TextBlock>
 			</Border>
 			<Border CornerRadius="25" BorderBrush="Black" Grid.Row="1" Padding="10" Margin="10" BorderThickness="0" BoxShadow="1 1 20  #141414, 1 1 20 #141414, 1 1 20  #141414, 1 1 10 #141414">
-				<controls:CirculoControl Grid.Row="1" Grid.Column="0" Angle="7" HorizontalAlignment="Center" VerticalAlignment="Center"></controls:CirculoControl>
+				<controls:CirculoControl Grid.Row="1" Grid.Column="0" Angle="7" HorizontalAlignment="Center" VerticalAlignment="Center"  x:Name="Circulo" Click="OnClick">
+					<controls:CirculoControl.Transitions>
+						<Transitions>
+							<TransformOperationsTransition Property="RenderTransform" Duration="0:0:10"/>
+						</Transitions>
+					</controls:CirculoControl.Transitions>
+				</controls:CirculoControl>
 			</Border>
 			<Border CornerRadius="25" BorderBrush="Black" Grid.Row="1" Grid.Column="1" Padding="10" Margin="10" BorderThickness="0" BoxShadow="1 1 20  #141414, 1 1 20 #141414, 1 1 20  #141414, 1 1 10 #141414">
 				<TextBlock Grid.Row="1" Grid.Column="1"></TextBlock>
