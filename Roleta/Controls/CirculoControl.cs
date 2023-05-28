@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Runtime.ConstrainedExecution;
 using Avalonia;
 using Avalonia.Animation;
 using Avalonia.Controls;
@@ -59,12 +60,28 @@ namespace Roleta.Controls
             var p1 = new Point(0, 0);
             Brush brush1 = new SolidColorBrush(Color.FromArgb(90, 0, 0, 0));
             var pen = new Pen(brush1, 1, lineCap: PenLineCap.Square);
-            ConicGradientBrush brush = CriaBrushParaOCirculo(p1);
+            ConicGradientBrush brush;
 
-            drawingContext.DrawEllipse(brush, pen, p1, 300, 300);
+            var radialBrush = new RadialGradientBrush
+            {
+                GradientStops = new GradientStops
+                {
+                    new GradientStop(Color.FromArgb(255,255,0,0), 1),
+                    new GradientStop(Color.FromArgb(90,255,0,0), 0.2),
+                    new GradientStop(Color.FromArgb(0,0,0,0), 0)
+                }
+            };
+
+ 
+                brush = CriaBrushParaOCirculo(p1, 100);
+                drawingContext.DrawEllipse(brush, pen, p1, 300, 300);
+                brush = CriaBrushParaOCirculo(p1, 50);
+                drawingContext.DrawEllipse(brush, pen, p1, 305, 305);
+
+
             //p1                    // Coordenadas do centro do círculo
 
-            
+
             // Coordenadas do primeiro vértice
             float angleIncrement = 360 / 10;
             float startingAngle = 270;
@@ -86,55 +103,39 @@ namespace Roleta.Controls
 
         }
 
-
-        private static ConicGradientBrush CriaBrushParaOCirculo(Point p1)
+        /// <summary>
+        /// Aqui é onde é gerada a cor que irá preencher o círculo. para saber como customizar/dinamicamente criar cores,
+        /// verifique o histórico de commits dessa classe.
+        /// </summary>
+        /// <param name="p1"></param>
+        /// <param name="alphaInt"></param>
+        /// <returns></returns>
+        private static ConicGradientBrush CriaBrushParaOCirculo(Point p1, int alphaInt)
         {
+            var alpha = (byte)alphaInt;
             ConicGradientBrush brush = new ConicGradientBrush();
             brush.Center = new RelativePoint(p1, RelativeUnit.Absolute);
 
             brush.GradientStops = new GradientStops();
-
-            for (int i = 0; i < 10; i++)
+            var colors = new[]
             {
-                double offset = i / (10 - 1.0);
-                byte r, g, b;
-                if (offset < 0.2) // Verde ciano para azul
-                {
-                    r = 0;
-                    g = (byte)((255 - 0) * (5 * offset) + 0);
-                    b = (byte)((255 - 255) * (5 * offset) + 255);
-                }
-                else if (offset < 0.4) // Azul para roxo
-                {
-                    r = (byte)((128 - 0) * ((offset - 0.2) * 5) + 0);
-                    g = 0;
-                    b = (byte)((128 - 255) * ((offset - 0.2) * 5) + 255);
-                }
-                else if (offset < 0.6) // Roxo para vermelho
-                {
-                    r = (byte)((255 - 128) * ((offset - 0.4) * 5) + 128);
-                    g = 0;
-                    b = (byte)((0 - 128) * ((offset - 0.4) * 5) + 128);
-                }
-                else if (offset < 0.8) // Vermelho para laranja
-                {
-                    r = 255;
-                    g = (byte)((165 - 0) * ((offset - 0.6) * 5) + 0);
-                    b = 0;
-                }
-                else // Laranja para amarelo
-                {
-                    r = 255;
-                    g = (byte)((255 - 165) * ((offset - 0.8) * 5) + 165);
-                    b = 0;
-                }
+                Color.FromArgb(alpha,255, 40, 40),
+                Color.FromArgb(alpha,255, 20, 20),
+                Color.FromArgb(alpha,255, 0, 0),
+                Color.FromArgb(alpha, 167, 0, 0),
+                Color.FromArgb(alpha, 140, 0, 0)
+            };
 
-
-                byte alpha = 110;
-                Color cor = new Color(alpha, r, g, b);
-
-                brush.GradientStops.Add(new GradientStop(cor, offset));
+            for (int i = 0; i < colors.Length; i++)
+            {
+                double offset = i / (double)(colors.Length - 1);
+                var gradientStop = new GradientStop(colors[i], offset);
+                brush.GradientStops.Add(gradientStop);
             }
+
+
+            
+         
 
             return brush;
         }

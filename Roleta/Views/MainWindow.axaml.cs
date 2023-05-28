@@ -55,7 +55,7 @@ namespace Roleta.Views
                 return;
             }
             var context = DataContext as MainWindowViewModel;
-            Random rand = new Random(Guid.NewGuid().GetHashCode());
+                Random rand = new Random(Guid.NewGuid().GetHashCode());
             int graus = rand.Next(3600, (10 / 2) * 7200) / 5;
             context!.Angle = $"rotate({graus}deg)";
 
