@@ -20,7 +20,7 @@
 			<Setter Property="FontFamily" Value="/Assets/fonte-titulo.ttf#Dailymirror Personal Use"/>
 		</Style>
 		<Style Selector="Button#Circulo">
-			<Setter Property="RenderTransform" Value="rotate(0)"/>
+			<Setter Property="RenderTransform" Value="rotate(0deg)"/>
 			<Setter Property="Background" Value="#1e1e1e"></Setter>
 		</Style>
 		<Style Selector="Button#Circulo.clicarao">
@@ -31,6 +31,7 @@
 
 	<Design.PreviewWith>
 		<controls:CirculoControl></controls:CirculoControl>
+		<controls:TrianguloControl></controls:TrianguloControl>
 	</Design.PreviewWith>
 	
 	<Design.DataContext>
@@ -51,16 +52,34 @@
 				<TextBlock Classes="h1" Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Background="#1e1e1e" TextAlignment="Center">ROLETA DO FILMASSO UwU</TextBlock>
 			</Border>
 			<Border CornerRadius="25" Background="#1e1e1e" BorderBrush="#1e1e1e" Grid.Row="1" Padding="0" Margin="10" BorderThickness="10" BoxShadow="inset 1 1 20  #141414, 1 1 20 #141414, 1 1 20  #141414, 1 1 10 #141414">
-				<controls:CirculoControl Grid.Row="1" Grid.Column="0" Angle="7" HorizontalAlignment="Center"  VerticalAlignment="Center"  x:Name="Circulo" Click="OnClick">
-					<controls:CirculoControl.Transitions>
-						<Transitions>
-							<TransformOperationsTransition Property="RenderTransform" Duration="0:0:10"/>
-						</Transitions>
-					</controls:CirculoControl.Transitions>
-				</controls:CirculoControl>
+				<Panel Grid.Row="1" Grid.Column="0">
+					<controls:TrianguloControl HorizontalAlignment="Left" Filmes="{Binding Filmes}" VerticalAlignment="Center" x:Name="Triangulo" FilmesContagem="{Binding Filmes.Count}" ZIndex="2"></controls:TrianguloControl>
+					<controls:CirculoControl  Divisoes="{Binding Filmes.Count}"  HorizontalAlignment="Center"  VerticalAlignment="Center"  x:Name="Circulo" Click="OnClick" ZIndex="1">
+						<controls:CirculoControl.Transitions>
+							<Transitions>
+								<TransformOperationsTransition Property="RenderTransform" Duration="0:0:10" Easing="CircularEaseInOut"/>
+							</Transitions>
+						</controls:CirculoControl.Transitions>
+					</controls:CirculoControl>
+				</Panel>
 			</Border>
-			<Border CornerRadius="25" BorderBrush="#1e1e1e" Grid.Row="1" Grid.Column="1" Padding="0" Margin="10" Background="#1e1e1e" BorderThickness="10" BoxShadow="1 1 20  #141414, 1 1 20 #141414, 1 1 20  #141414, 1 1 10 #141414">
-				<TextBlock Grid.Row="1" Grid.Column="1"></TextBlock>
+			<Border CornerRadius="25" Background="#1e1e1e"  Grid.Row="1" Grid.Column="1" BorderBrush="#1e1e1e" Padding="0" Margin="10" BorderThickness="10" BoxShadow="inset 1 1 20  #141414, 1 1 20 #141414, 1 1 20  #141414, 1 1 10 #141414">
+				<Panel >
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="0.2*">
+							</RowDefinition>
+							<RowDefinition Height="0.8*"></RowDefinition>
+						</Grid.RowDefinitions>
+						<TextBox Watermark="Digite o nome do filme e aperte enter." TextWrapping="Wrap" Grid.Row="0" Grid.Column="0" x:Name="InputFilme"></TextBox>
+						<DataGrid Name="MyDataGrid" Items="{Binding Filmes}" Grid.Row="1" Grid.Column="0" AutoGenerateColumns="False" >
+							<DataGrid.Columns>
+								<DataGridTextColumn Header="Filme"  Binding="{Binding Name}"/>
+								<DataGridTextColumn Header="Pontos" Binding="{Binding Pontuacao}" />
+							</DataGrid.Columns>
+						</DataGrid>
+					</Grid>
+				</Panel>
 			</Border>
 		</Grid>
 
