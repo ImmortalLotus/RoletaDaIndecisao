@@ -13,6 +13,8 @@ namespace Roleta.Views
 {
     public partial class MainWindow : Window
     {
+        public bool TaGirando { get; set; }
+        public bool Clickou { get; set; }
         public MainWindow()
         {
             InitializeComponent();
@@ -30,6 +32,8 @@ namespace Roleta.Views
                 OnClick,
                 RoutingStrategies.Bubble
                 );
+            TaGirando = false;
+            Clickou = false;
         }
         private async void HandleClickEvent(object? sender, RoutedEventArgs e)
         {
@@ -42,16 +46,24 @@ namespace Roleta.Views
                 _ => "Direct"
             };
             Debug.WriteLine($"{eventType} Routed Event {e.RoutedEvent!.Name} raised on { senderControl.Name}; Event Source is { (e.Source as Control)!.Name }");
-            if(e.Source is not null)
+            if(e.Source is not null && !Clickou)
             {
                 if ((e.Source as Control)!.Name is not null)
                 {
                     if((e.Source as Control)!.Name.Equals("Circulo"))
                     {
+                        Clickou = true;
                         var context = DataContext as MainWindowViewModel;
                         RaiseEvent(new RoutedEventArgs(CirculoControl.ClickEvent));
+                        TaGirando=true;
                         await Task.Delay(10000);
                         context!.Filmes[context!.FilmeInvisivel].Pontuacao = context!.PontoInvisivel;
+                        await Task.Delay(1000);
+                        Circulo.Classes.Set("clicarao", false);
+                        
+                        await Task.Delay(10000);
+                        TaGirando = false;
+                        Clickou=false;
                     }
 
                 }
@@ -82,9 +94,8 @@ namespace Roleta.Views
 
         public void OnClick(object? sender, RoutedEventArgs args)
         {
-            if(Circulo.Classes.Any(x => x.Equals("clicarao")))
+            if (TaGirando)
             {
-                Circulo.Classes.Set("clicarao", false);
                 return;
             }
             var context = DataContext as MainWindowViewModel;
