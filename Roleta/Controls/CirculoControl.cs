@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Collections.ObjectModel;
 using System.Runtime.ConstrainedExecution;
 using Avalonia;
 using Avalonia.Animation;
 using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Rendering.SceneGraph;
@@ -12,6 +13,8 @@ using Avalonia.Styling;
 using Avalonia.Threading;
 using HarfBuzzSharp;
 using ReactiveUI;
+using Roleta.Models;
+using Roleta.Static_Properties;
 using Brush = Avalonia.Media.Brush;
 using Brushes = Avalonia.Media.Brushes;
 using Color = Avalonia.Media.Color;
@@ -20,8 +23,12 @@ using Point = Avalonia.Point;
 
 namespace Roleta.Controls
 {
+
     public class CirculoControl : Control,IStyleable
     {
+   
+
+
         public static readonly RoutedEvent<RoutedEventArgs> ClickEvent =
             RoutedEvent.Register<CirculoControl, RoutedEventArgs>(nameof(Click), RoutingStrategies.Bubble);
 
@@ -37,69 +44,134 @@ namespace Roleta.Controls
 
         static CirculoControl()
         {
-            AffectsRender<CirculoControl>(AngleProperty);
+            AffectsRender<CirculoControl>(DivisoesProperty);
+
         }
 
         public CirculoControl()
         {
             List<string> decisoes = new List<string>();
+            int n = Cores.coresPastel.Length;
+            Random rand = new Random();
+            while (n > 1)
+            {
+                int k = rand.Next(n--);
+                var temp = Cores.coresPastel[n];
+                Cores.coresPastel[n] = Cores.coresPastel[k];
+                Cores.coresPastel[k] = temp;
+            }
         }
 
-        public static readonly StyledProperty<double> AngleProperty =
-            AvaloniaProperty.Register<CirculoControl, double>(nameof(Angle));
+        public static readonly StyledProperty<int> DivisoesProperty =
+            AvaloniaProperty.Register<CirculoControl, int>(nameof(Divisoes));
 
-        public double Angle
+        public int Divisoes
         {
-            get => GetValue(AngleProperty);
-            set => SetValue(AngleProperty, value);
+            get => GetValue(DivisoesProperty);
+            set => SetValue(DivisoesProperty, value);
+        }
+        
+
+        public Geometry geraArco(int StartAngle, int SweepAngle)
+        {
+            var angle1 = DegreesToRad(StartAngle);
+            var angle2 = angle1 + DegreesToRad(SweepAngle);
+
+            var startAngle = Math.Min(angle1, angle2);
+            var sweepAngle = Math.Max(angle1, angle2);
+
+            var normStart = RadToNormRad(startAngle);
+            var normEnd = RadToNormRad(sweepAngle);
+
+            var rect = new Rect(0,0,600, 600);
+
+            if ((normStart == normEnd) && (startAngle != sweepAngle)) // Complete ring.
+            {
+                return new EllipseGeometry(rect.Deflate(1 / 2));
+            }
+            else if (SweepAngle == 0)
+            {
+                return new StreamGeometry();
+            }
+            else // Partial arc.
+            {
+                var deflatedRect = rect;
+
+                var centerX = 0;
+                var centerY = 0;
+
+                var radiusX = 300;
+                var radiusY = 300;
+
+                var angleGap = RadToNormRad(sweepAngle - startAngle);
+
+                var startPoint = GetRingPoint(radiusX, radiusY, centerX, centerY, startAngle);
+                var endPoint = GetRingPoint(radiusX, radiusY, centerX, centerY, sweepAngle);
+
+                var arcGeometry = new StreamGeometry();
+
+                using (var ctx = arcGeometry.Open())
+                {
+                    
+                    ctx.BeginFigure(startPoint, false);
+
+
+                    ctx.ArcTo(endPoint, new Avalonia.Size(radiusX, radiusY), 0, angleGap >= Math.PI,
+                        SweepDirection.Clockwise);
+                    ctx.LineTo(new Point(0, 0));
+                    ctx.EndFigure(false);
+                }
+
+                return arcGeometry;
+            }
         }
 
+        static double DegreesToRad(double inAngle) =>
+        inAngle * Math.PI / 180;
 
+        static double RadToNormRad(double inAngle) => ((inAngle % (Math.PI * 2)) + (Math.PI * 2)) % (Math.PI * 2);
+
+        static Point GetRingPoint(double radiusX, double radiusY, double centerX, double centerY, double angle) =>
+            new Point((radiusX * Math.Cos(angle)) + centerX, (radiusY * Math.Sin(angle)) + centerY);
         public override void Render(DrawingContext drawingContext)
         {
             var p1 = new Point(0, 0);
-            Brush brush1 = new SolidColorBrush(Color.FromArgb(90, 0, 0, 0));
-            var pen = new Pen(brush1, 1, lineCap: PenLineCap.Square);
-            ConicGradientBrush brush;
-
-            var radialBrush = new RadialGradientBrush
+            Brush brush1 = new SolidColorBrush(Cores.coresPastel[0]);
+            var pen = new Pen(new SolidColorBrush( Color.FromArgb(255,255,255,255)), 5, lineCap: PenLineCap.Square);
+            Random rand = new Random(Guid.NewGuid().GetHashCode());
+            if (Divisoes <2)
             {
-                GradientStops = new GradientStops
-                {
-                    new GradientStop(Color.FromArgb(255,255,0,0), 1),
-                    new GradientStop(Color.FromArgb(90,255,0,0), 0.2),
-                    new GradientStop(Color.FromArgb(0,0,0,0), 0)
-                }
-            };
 
-
-                brush = CriaBrushParaOCirculo(p1, 100);
-                drawingContext.DrawEllipse(brush, pen, p1, 300, 300);
-                brush = CriaBrushParaOCirculo(p1, 50);
-                drawingContext.DrawEllipse(brush, pen, p1, 305, 305);
-
-
-            //p1                    // Coordenadas do centro do círculo
-
-
-            // Coordenadas do primeiro vértice
-            float angleIncrement = 360 / 10;
-            float startingAngle = 270;
-            for (int i = 0; i < 10; i++)
-            {
-                float angle = startingAngle;
-
-                if (i != 0)
-                {
-                    angle = startingAngle + (i) * angleIncrement;
-                }
-
-
-                // Restaure o estado anterior da transformação
-                Point pointA = new Point(300 * Math.Cos((angle * Math.PI) / 180), 300 * Math.Sin((angle * Math.PI) / 180));
-
-                drawingContext.DrawLine(pen, new Point(0, 0), pointA);
+                drawingContext.DrawEllipse(brush1, null, p1, 300, 300);
             }
+            else
+            {
+                
+
+                float angleIncrement = 360 / Divisoes;
+                float startingAngle = 270;
+
+                for (int i = 0; i < Divisoes; i++)
+                {
+                    int corRandom = rand.Next(1, 2);
+
+                    float angle = startingAngle;
+                    float angle2 = 360 / Divisoes;
+                    float previousAngle = startingAngle - 360 / Divisoes;
+                    if (i != 0)
+                    {
+                        angle = startingAngle + (i) * angleIncrement;
+                        angle2 = 360 / Divisoes;
+                        previousAngle = startingAngle + (i - 1) * angleIncrement;
+                    }
+                    brush1 = new SolidColorBrush(Cores.coresPastel[i]);
+                    // Restaure o estado anterior da transformação
+                    Point pointA = new Point(300 * Math.Cos((angle * Math.PI) / 180), 300 * Math.Sin((angle * Math.PI) / 180));
+                    drawingContext.DrawGeometry(brush1, pen, this.geraArco((int)previousAngle, (int)angle2));
+                    drawingContext.DrawLine(pen, new Point(0, 0), pointA);
+                }
+            }
+            
 
         }
 
