@@ -10,8 +10,7 @@ namespace Roleta.ViewModels
     {
         public string Greeting => "Welcome to Avalonia!";
 
-        private string _Spin;
-        private string _ReverseAngle;
+        private string _Angle;
 
 
         private ObservableCollection<Filme> _Filmes;
@@ -20,19 +19,15 @@ namespace Roleta.ViewModels
         public int FilmeInvisivel { get; set; }
         public string Angle
         {
-            get => _Spin;
-            set => this.RaiseAndSetIfChanged(ref _Spin, value);
-        }
-
-        public string ReverseAngle
-        {
-            get => _ReverseAngle;
-            set => this.RaiseAndSetIfChanged(ref _Spin, value);
+            get => _Angle;
+            set => this.RaiseAndSetIfChanged(ref _Angle, value);
         }
         public MainWindowViewModel()
         {
             Angle = "rotate(10deg)";
-            this.Filmes = new ObservableCollection<Filme>();
+            Filmes = new ObservableCollection<Filme>();
+            _Filmes = Filmes;
+            _Angle=Angle;
         }
     }
 }

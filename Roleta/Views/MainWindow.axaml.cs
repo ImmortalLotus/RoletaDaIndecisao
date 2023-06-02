@@ -42,13 +42,21 @@ namespace Roleta.Views
                 _ => "Direct"
             };
             Debug.WriteLine($"{eventType} Routed Event {e.RoutedEvent!.Name} raised on { senderControl.Name}; Event Source is { (e.Source as Control)!.Name }");
-            if(e.Source is not null && (e.Source as Control)!.Name is not null && (e.Source as Control)!.Name.Equals("Circulo"))
+            if(e.Source is not null)
             {
-                var context = DataContext as MainWindowViewModel;
-                RaiseEvent(new RoutedEventArgs(CirculoControl.ClickEvent));
-                await Task.Delay(10000);
-                context!.Filmes[context!.FilmeInvisivel].Pontuacao = context!.PontoInvisivel;
+                if ((e.Source as Control)!.Name is not null)
+                {
+                    if((e.Source as Control)!.Name.Equals("Circulo"))
+                    {
+                        var context = DataContext as MainWindowViewModel;
+                        RaiseEvent(new RoutedEventArgs(CirculoControl.ClickEvent));
+                        await Task.Delay(10000);
+                        context!.Filmes[context!.FilmeInvisivel].Pontuacao = context!.PontoInvisivel;
+                    }
+
+                }
             }
+                
             // uncomment if you want to test handling the event
             
         }
@@ -58,13 +66,17 @@ namespace Roleta.Views
             var textInpt = (TextBox)sender!;
             if (textInpt.Text is not null && textInpt.Text.Contains('@'))
             {
+
                 var context = DataContext as MainWindowViewModel;
-                if (context.Filmes.Count >= 10)
+                if (context is not null)
                 {
-                    context.Filmes.RemoveAt(0);
+                    if (context.Filmes.Count >= 10)
+                    {
+                        context.Filmes.RemoveAt(0);
+                    }
+                    context!.Filmes.Add(new Models.Filme(textInpt.Text.Replace("@", "").Trim()));
+                    textInpt.Text = "";
                 }
-                context!.Filmes.Add(new Models.Filme(textInpt.Text.Replace("@","").Trim()));
-                textInpt.Text = "";
             }
         }
 
